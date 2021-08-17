@@ -134,4 +134,29 @@ Create View [PercentagePopulationVaccinated]  as
 
 select * from [PercentagePopulationVaccinated];
 
+Drop view if exists [GlobalDeaths];
+
+Create View [GlobalDeaths]  AS
+	SELECT p.continent, SUM(cd1.death_counts) As global_deaths
+	FROM (SELECT location, MAX(cast(total_deaths as int)) As death_counts
+				FROM Portfolio..CovidsDeaths
+				GROUP BY location) AS cd1
+	INNER JOIN Portfolio..Populations AS p
+	ON cd1.location = p.location
+	GROUP BY p.continent; 
+
+select * from [GlobalDeaths];
+
+Drop view if exists [globalCases];
+
+Create View [globalCases]  AS
+	SELECT p.continent, SUM(cd1.cases_counts) 	As global_cases
+	FROM (SELECT location, MAX(new_cases)  As cases_counts
+				FROM Portfolio..CovidsDeaths
+				GROUP BY location) AS cd1
+	INNER JOIN Portfolio..Populations AS p
+	ON cd1.location = p.location
+	GROUP BY p.continent; 
+
+select * from [globalCases];
 
